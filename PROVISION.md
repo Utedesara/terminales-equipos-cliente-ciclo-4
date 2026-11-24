@@ -3,18 +3,28 @@
 ## Verificación de idempotencia
 
 ### 27-oct · primer playbook (3 tareas)
-1.ª corrida: (pega aquí el PLAY RECAP)
-2.ª corrida: (pega aquí el PLAY RECAP)
+
+Nota: Las pruebas se realizaron sobre un servidor que ya había sido aprovisionado previamente con la versión ampliada del playbook.
+
+1.ª corrida:(PLAY RECAP **************************************************************** localhost : ok=4 changed=0 unreachable=0 failed=0 skipped=0 rescued=0 ignored=0)
+
+2.ª corrida:(PLAY RECAP **************************************************************** localhost : ok=4 changed=0 unreachable=0 failed=0 skipped=0 rescued=0 ignored=0)
+
+Resultado: En ambas ejecuciones las tres tareas encontraron los recursos existentes y no realizaron cambios. El resumen incluye también `Gathering Facts`, por eso muestra cuatro actividades.
 
 ### 27-oct · playbook con condiciones 1, 3, 5, 6
-1.ª corrida: (pega aquí el PLAY RECAP)
-2.ª corrida: (pega aquí el PLAY RECAP)
+1.ª corrida: (PLAY RECAP ****************************************************************
+localhost : ok=9 changed=7 unreachable=0 failed=0 skipped=0 rescued=0 ignored=0)
+2.ª corrida: (PLAY RECAP ****************************************************************
+localhost : ok=9 changed=0 unreachable=0 failed=0 skipped=0 rescued=0 ignored=0)
 
 ### Romper algo a propósito
-Borré `/opt/registro/registro.env` a mano y corrí el playbook: (pega aquí el PLAY RECAP — debe decir changed=1)
+Borré `/opt/registro/registro.env` a mano y corrí el playbook: (localhost : ok=9 changed=1 unreachable=0 failed=0 skipped=0 rescued=0 ignored=0)
 
-## La visita de verificación (pendiente)
+## La visita de verificación
 
-Qué pasó en dos corridas: la tarea `command` salió `changed` las dos veces y la base quedó con dos visitas.
-Por qué pasa: Ansible no sabe qué hace un comando suelto; `command` vuelve a ser una lista de pasos.
-Cómo creo que se podría evitar (idea, no código): preguntar primero cuántas visitas de verificación hay, y agregarla solo si hay cero.
+Qué pasó en dos corridas: Al ejecutar dos veces el mismo comando `INSERT` en SQLite, la primera consulta mostró 1 visita y la segunda mostró 2 visitas. Esto demuestra que se insertó un registro nuevo en cada ejecución.
+
+Por qué pasa: Ansible no sabe qué hace un comando suelto; la tarea `command` vuelve a ejecutar la instrucción sin comprobar si el registro ya existe.
+
+Cómo creo que se podría evitar (idea, no código): Consultar primero cuántas visitas de verificación existen y agregar una nueva solamente si no hay ninguna. También se podría utilizar una estrategia que identifique cada visita de forma única para evitar duplicados.
