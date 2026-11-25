@@ -28,3 +28,15 @@ Qué pasó en dos corridas: Al ejecutar dos veces el mismo comando `INSERT` en S
 Por qué pasa: Ansible no sabe qué hace un comando suelto; la tarea `command` vuelve a ejecutar la instrucción sin comprobar si el registro ya existe.
 
 Cómo creo que se podría evitar (idea, no código): Consultar primero cuántas visitas de verificación existen y agregar una nueva solamente si no hay ninguna. También se podría utilizar una estrategia que identifique cada visita de forma única para evitar duplicados.
+
+## Verificación de idempotencia — clave desde el secreto (taller del 17-nov)
+
+1.ª corrida: changed=7 failed=0
+
+2.ª corrida: changed=0 failed=0
+
+Sin la clave (env -u): se detuvo en la tarea "La clave del servidor de pruebas está en el entorno"
+
+cat de registro.env sin sudo: Permission denied
+
+Rotación con read -s: changed=1

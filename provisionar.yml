@@ -6,6 +6,8 @@
   connection: local
   become: true
 
+  vars:
+    registro_clave: "{{ lookup('ansible.builtin.env', 'REGISTRO_CLAVE') }}"
   tasks:
     - name: El programa sqlite3 está instalado
       ansible.builtin.apt:
@@ -13,6 +15,16 @@
         state: present
         update_cache: true
         cache_valid_time: 3600
+
+    - name: La clave del servidor de pruebas está en el entorno
+      ansible.builtin.assert:
+        that:
+          - registro_clave | length > 0
+        fail_msg: >
+          Falta REGISTRO_CLAVE. Defínela como secreto de Codespaces
+          (Settings > Codespaces > Codespaces secrets) y abre un Codespace nuevo,
+          o en esta terminal: read -s REGISTRO_CLAVE && export REGISTRO_CLAVE
+        quiet: true
 
     - name: Existe el usuario de sistema registro
       ansible.builtin.user:
@@ -54,8 +66,11 @@
         content: |
           TZ=America/Bogota
           REGISTRO_DB=/opt/registro/registro.db
+          REGISTRO_CLAVE={{ registro_clave }}
         owner: registro
         group: registro
+        mode: "0600"
+      no_log: true
 
     - name: El aviso aparece al abrir la terminal
       become: false

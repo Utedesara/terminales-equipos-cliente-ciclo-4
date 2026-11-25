@@ -17,9 +17,9 @@ for fila in sqlite3.connect('file:/opt/registro/registro.db?mode=ro', uri=True).
     print(fila)
 " 2>&1
 
-echo "== 5. Configuración (registro.env)"
-cat /opt/registro/registro.env 2>&1
-echo "(líneas: $(wc -l 2>/dev/null < /opt/registro/registro.env || echo 0))"
+echo "== 5. Configuración (registro.env, sin mostrar la clave)"
+sudo sed 's/^REGISTRO_CLAVE=.*/REGISTRO_CLAVE=********/' /opt/registro/registro.env 2>&1
+echo "(líneas: $(sudo cat /opt/registro/registro.env 2>/dev/null | wc -l))"
 
 echo "== 7. Avisos en .bashrc"
 grep -c "SERVIDOR DE PRUEBAS" ~/.bashrc
